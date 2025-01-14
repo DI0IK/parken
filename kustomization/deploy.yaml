@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: parken
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parken
+  template:
+    metadata:
+      labels:
+        app: parken
+    spec:
+      containers:
+        - name: parken
+          image: ghcr.io/DI0IK/parken:latest
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: parken-data
+              mountPath: /data
+      volumes:
+        - name: parken-data
+          persistentVolumeClaim:
+            claimName: parken-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parken
+spec:
+  selector:
+    app: parken
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: parken
+  annotations:
+    gethomepage.dev/href: "https://parken.dominikstahl.dev"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/description: "Track parking spots"
+    gethomepage.dev/group: Dev
+    gethomepage.dev/icon: "mdi:car"
+    gethomepage.dev/app: Parken
+    gethomepage.dev/name: Parken
+    gethomepage.dev/pod-selector: ""
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`parken.dominikstahl.dev`)
+      kind: Rule
+      services:
+        - name: parken
+          port: 3000
