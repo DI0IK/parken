@@ -1,9 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parken</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   </head>
-  <body></body>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Parken</h1>
+      </header>
+      <main>
+        <div class="controls">
+          <label for="garage-select">Wählen Sie eine Parkgarage:</label>
+          <select id="garage-select"></select>
+          <label for="date-select">Wählen Sie ein Datum:</label>
+          <input type="date" id="date-select" value="" />
+          <div class="checkbox-group">
+            <label for="show-yesterday">
+              <input type="checkbox" id="show-yesterday" />
+              Gestern anzeigen
+            </label>
+            <label for="show-last-week">
+              <input type="checkbox" id="show-last-week" />
+              Letzte Woche anzeigen
+            </label>
+          </div>
+        </div>
+        <canvas id="parking-chart" width="800" height="400"></canvas>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
 </html>

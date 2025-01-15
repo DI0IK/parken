@@ -1,0 +1,19 @@
+name: parken
+
+services:
+  parken:
+    image: ghcr.io/di0ik/parken:main
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+    environment:
+      - PARKING_IDS=390
+    develop:
+      watch:
+        - path: ./client
+          action: sync
+          target: /app/client

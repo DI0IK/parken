@@ -1,0 +1,87 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 10px;
+}
+
+label {
+  font-weight: bold;
+}
+
+select,
+input[type="date"],
+input[type="checkbox"] {
+  padding: 5px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+input[type="checkbox"] {
+  accent-color: #9d09ff;
+}
+
+canvas {
+  display: block;
+  margin: 20px auto;
+  border-radius: 10px;
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #f0f0f0;
+    color: #000000;
+  }
+
+  select,
+  input[type="date"],
+  input[type="checkbox"] {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+
+  .container {
+    background-color: #1e1e1e;
+  }
+
+  select,
+  input[type="date"],
+  input[type="checkbox"] {
+    background-color: #333333;
+    color: #ffffff;
+  }
+}
