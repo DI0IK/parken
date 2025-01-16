@@ -18,6 +18,13 @@ spec:
           image: ghcr.io/DI0IK/parken:latest
           ports:
             - containerPort: 3000
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
           volumeMounts:
             - name: parken-data
               mountPath: /data
