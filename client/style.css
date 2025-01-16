@@ -52,6 +52,8 @@ canvas {
   display: block;
   margin: 20px auto;
   border-radius: 10px;
+  width: 100%;
+  height: 50vh; /* Use 50% of the viewport height */
 }
 
 @media (prefers-color-scheme: light) {

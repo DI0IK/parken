@@ -39,7 +39,31 @@ async function fetchData(id, date, offset = 0) {
   return data;
 }
 
+function cleanData(data) {
+  return data.filter((entry, index, array) => {
+    if (entry.free_capacity !== null) {
+      return true;
+    }
+    const prev = array[index - 1];
+    const next = array[index + 1];
+    return !(
+      prev &&
+      next &&
+      prev.free_capacity !== null &&
+      next.free_capacity !== null
+    );
+  });
+}
+
 function renderChart(data, comparisonData = {}) {
+  data = cleanData(data);
+  if (comparisonData.yesterday) {
+    comparisonData.yesterday = cleanData(comparisonData.yesterday);
+  }
+  if (comparisonData.lastWeek) {
+    comparisonData.lastWeek = cleanData(comparisonData.lastWeek);
+  }
+
   const ctx = document.getElementById("parking-chart").getContext("2d");
   const labels = data.map((entry) => entry.updated_at);
   const values = data.map((entry) => entry.free_capacity);
@@ -48,7 +72,8 @@ function renderChart(data, comparisonData = {}) {
       label: "Verfügbare Plätze",
       data: values,
       borderColor: "rgba(75, 192, 192, 1)",
-      borderWidth: 1,
+      borderWidth: 3, // Increase line thickness
+      pointRadius: 0, // Remove dots
     },
   ];
 
@@ -57,8 +82,9 @@ function renderChart(data, comparisonData = {}) {
       label: "Gestern",
       data: comparisonData.yesterday.map((entry) => entry.free_capacity),
       borderColor: "rgba(192, 75, 75, 1)",
-      borderWidth: 1,
+      borderWidth: 3, // Increase line thickness
       borderDash: [5, 5],
+      pointRadius: 0, // Remove dots
     });
   }
 
@@ -67,10 +93,14 @@ function renderChart(data, comparisonData = {}) {
       label: "Letzte Woche",
       data: comparisonData.lastWeek.map((entry) => entry.free_capacity),
       borderColor: "rgba(75, 75, 192, 1)",
-      borderWidth: 1,
+      borderWidth: 3, // Increase line thickness
       borderDash: [5, 5],
+      pointRadius: 0, // Remove dots
     });
   }
+
+  const minTime = new Date(labels[0]).setHours(0, 0, 0, 0);
+  const maxTime = new Date(labels[0]).setHours(23, 59, 59, 999);
 
   if (chartInstance) {
     chartInstance.data.labels = labels;
@@ -89,10 +119,37 @@ function renderChart(data, comparisonData = {}) {
             type: "time",
             time: {
               unit: "hour",
+              tooltipFormat: "HH:mm",
+              displayFormats: {
+                hour: "HH:mm",
+              },
             },
+            min: minTime,
+            max: maxTime,
           },
           y: {
             beginAtZero: true,
+          },
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: "x",
+              threshold: 1,
+            },
+            limits: {
+              x: { min: minTime, max: maxTime },
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true,
+              },
+              mode: "x",
+            },
           },
         },
       },
