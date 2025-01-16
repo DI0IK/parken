@@ -31,6 +31,27 @@ header {
   gap: 10px;
 }
 
+.date-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.date-controls button {
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.date-controls input[type="date"] {
+  flex: 1 1 auto;
+}
+
 label {
   font-weight: bold;
 }

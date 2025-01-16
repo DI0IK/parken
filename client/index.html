@@ -19,7 +19,11 @@
           <label for="garage-select">Wählen Sie eine Parkgarage:</label>
           <select id="garage-select"></select>
           <label for="date-select">Wählen Sie ein Datum:</label>
-          <input type="date" id="date-select" value="" />
+          <div class="date-controls">
+            <button id="prev-date">&lt;</button>
+            <input type="date" id="date-select" value="" />
+            <button id="next-date">&gt;</button>
+          </div>
           <div class="checkbox-group">
             <label for="show-yesterday">
               <input type="checkbox" id="show-yesterday" />

@@ -208,4 +208,20 @@ document
   .getElementById("show-last-week")
   .addEventListener("change", updateChart);
 
+document.getElementById("prev-date").addEventListener("click", () => {
+  const dateInput = document.getElementById("date-select");
+  const currentDate = new Date(dateInput.value);
+  currentDate.setDate(currentDate.getDate() - 1);
+  dateInput.value = currentDate.toISOString().split("T")[0];
+  updateChart();
+});
+
+document.getElementById("next-date").addEventListener("click", () => {
+  const dateInput = document.getElementById("date-select");
+  const currentDate = new Date(dateInput.value);
+  currentDate.setDate(currentDate.getDate() + 1);
+  dateInput.value = currentDate.toISOString().split("T")[0];
+  updateChart();
+});
+
 fetchGarages();
