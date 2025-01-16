@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: parken
-          image: ghcr.io/DI0IK/parken:latest
+          image: ghcr.io/DI0IK/parken:main
           ports:
             - containerPort: 3000
           resources:
