@@ -5,6 +5,8 @@ document.getElementById("date-select").value = new Date()
 let chartInstance = null;
 let updateInterval = null;
 
+const timeZoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+
 async function fetchGarages() {
   const response = await fetch("/api/garages");
   const garages = await response.json();
@@ -32,7 +34,7 @@ async function fetchGarages() {
 }
 
 async function fetchData(id, date, offset = 0) {
-  const end = new Date(date).getTime() - offset + 24 * 60 * 60 * 1000;
+  const end = new Date(date).getTime() + timeZoneOffset - offset + 24 * 60 * 60 * 1000;
   const start = new Date(end - 24 * 60 * 60 * 1000).getTime();
   const response = await fetch(`/api/data/${id}?start=${start}&end=${end}`);
   const { data } = await response.json();
@@ -166,18 +168,18 @@ async function updateChart() {
     const data = await fetchData(garageId, date);
     const comparisonData = {};
     if (document.getElementById("show-yesterday").checked) {
-      comparisonData.yesterday = await fetchData(
+      comparisonData.yesterday = (await fetchData(
         garageId,
         date,
         24 * 60 * 60 * 1000
-      );
+      )).map((d) => { ...d, updated_at: d.updated_at + 24 * 60 * 60 * 1000 });
     }
     if (document.getElementById("show-last-week").checked) {
-      comparisonData.lastWeek = await fetchData(
+      comparisonData.lastWeek = (await fetchData(
         garageId,
         date,
         7 * 24 * 60 * 60 * 1000
-      );
+      )).map((d) => { ...d, updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 });
     }
     renderChart(data, comparisonData);
 
