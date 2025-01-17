@@ -58,7 +58,7 @@ function cleanData(data) {
   });
 }
 
-function renderChart(data, comparisonData = {}) {
+function renderChart(data, comparisonData = {}, date) {
   data = cleanData(data);
   if (comparisonData.yesterday) {
     comparisonData.yesterday = cleanData(comparisonData.yesterday);
@@ -114,8 +114,8 @@ function renderChart(data, comparisonData = {}) {
     });
   }
 
-  const minTime = new Date(labels[0]).setHours(0, 0, 0, 0);
-  const maxTime = new Date(labels[0]).setHours(23, 59, 59, 999);
+  const minTime = new Date(date).setHours(0, 0, 0, 0);
+  const maxTime = new Date(date).setHours(23, 59, 59, 999);
 
   if (chartInstance) {
     chartInstance.data.labels = labels;
@@ -212,7 +212,7 @@ async function updateChart() {
         updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 + dateOffsetToToday,
       }));
     }
-    renderChart(data, comparisonData);
+    renderChart(data, comparisonData, date);
 
     // Clear any existing interval
     if (updateInterval) {
@@ -222,7 +222,7 @@ async function updateChart() {
     // Set interval to update data every 5 minutes
     updateInterval = setInterval(async () => {
       const newData = await fetchData(garageId, date);
-      renderChart(newData, comparisonData);
+      renderChart(newData, comparisonData, date);
     }, 300000); // 300000 ms = 5 minutes
   }
 }
