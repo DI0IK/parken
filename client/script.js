@@ -123,10 +123,6 @@ function renderChart(data, comparisonData = {}) {
   if (chartInstance) {
     chartInstance.data.labels = labels;
     chartInstance.data.datasets = datasets;
-    chartInstance.options.scales.x.min = minTime;
-    chartInstance.options.scales.x.max = maxTime;
-    chartInstance.options.plugins.limits.x.min = minTime;
-    chartInstance.options.plugins.limits.x.max = maxTime;
     chartInstance.update();
   } else {
     chartInstance = new Chart(ctx, {
@@ -186,7 +182,7 @@ async function updateChart() {
   const garageId = document.getElementById("garage-select").value;
   const date = document.getElementById("date-select").value;
   const dateOffsetToToday =
-    new Date(date).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0);
+    new Date().setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0);
   if (garageId) {
     window.location.hash = garageId;
 
