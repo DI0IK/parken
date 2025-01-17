@@ -32,8 +32,8 @@ async function fetchGarages() {
 }
 
 async function fetchData(id, date, offset = 0) {
-  const end = new Date(date).getTime() - offset + 24 * 60 * 60 * 1000;
-  const start = new Date(end - 24 * 60 * 60 * 1000).getTime();
+  const end = new Date(date).getTime() - offset + 36 * 60 * 60 * 1000;
+  const start = new Date(end - 48 * 60 * 60 * 1000).getTime();
   const response = await fetch(`/api/data/${id}?start=${start}&end=${end}`);
   const { data } = await response.json();
   return data;
