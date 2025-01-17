@@ -169,6 +169,14 @@ function renderChart(data, comparisonData = {}) {
               mode: "x",
             },
           },
+          tooltip: {
+            mode: "index",
+            intersect: false,
+          },
+        },
+        interaction: {
+          mode: "index",
+          intersect: false,
         },
       },
     });

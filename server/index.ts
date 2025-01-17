@@ -34,7 +34,8 @@ async function getData() {
       continue;
     }
 
-    const { realtime_data_updated_at, realtime_free_capacity, name } = site;
+    const { realtime_data_updated_at, realtime_free_capacity, name, capacity } =
+      site;
 
     const realtime_data_updated_at_unix = new Date(
       realtime_data_updated_at
@@ -45,7 +46,10 @@ async function getData() {
       [id, realtime_data_updated_at_unix, realtime_free_capacity]
     );
 
-    await db.run(`UPDATE parkplatz_meta SET name = ? WHERE id = ?`, [name, id]);
+    await db.run(
+      `UPDATE parkplatz_meta SET name = ?, capacity = ? WHERE id = ?`,
+      [name, capacity, id]
+    );
   }
 }
 

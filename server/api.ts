@@ -57,9 +57,10 @@ router.get("/data/:id", async (req, res) => {
 
   const data = await db.all(sql, params);
 
-  const meta = await db.get(`SELECT name FROM parkplatz_meta WHERE id = ?`, [
-    id,
-  ]);
+  const meta = await db.get(
+    `SELECT name, capacity FROM parkplatz_meta WHERE id = ?`,
+    [id]
+  );
 
   res.json({ data, meta });
 });

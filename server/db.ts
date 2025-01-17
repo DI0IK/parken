@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
-import { parseIDs } from "./helper";
+import { upgradeToVersion1 } from "./migrations/v1";
+import { upgradeToVersion2 } from "./migrations/v2";
 
 class Database {
   private static instance: Database;
@@ -53,26 +54,26 @@ class Database {
 
   async setupDatabase() {
     await this.run(
-      `CREATE TABLE IF NOT EXISTS parkplatz_daten (
-        id INTEGER,
-        updated_at INTEGER,
-        free_capacity INTEGER,
-        PRIMARY KEY (id, updated_at)
+      `CREATE TABLE IF NOT EXISTS db_version (
+        version INTEGER PRIMARY KEY
       )`
     );
 
-    await this.run(`CREATE TABLE IF NOT EXISTS parkplatz_meta (
-      id INTEGER PRIMARY KEY,
-      name TEXT
-    )`);
+    const versionRow = await this.get(`SELECT version FROM db_version`);
+    const currentVersion = versionRow ? versionRow.version : 0;
 
-    const IDS = parseIDs(process.env.PARKING_IDS || "");
-    for (const id of IDS) {
-      await this.run(
-        `INSERT OR IGNORE INTO parkplatz_meta (id, name) VALUES (?, ?)`,
-        [id, `Parkplatz ${id}`]
-      );
+    if (currentVersion < 1) {
+      await upgradeToVersion1(this);
     }
+
+    if (currentVersion < 2) {
+      await upgradeToVersion2(this);
+    }
+
+    // Future upgrades can be handled here
+    // if (currentVersion < 3) {
+    //   await upgradeToVersion3(this);
+    // }
   }
 }
 
