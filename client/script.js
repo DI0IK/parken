@@ -34,7 +34,8 @@ async function fetchGarages() {
 }
 
 async function fetchData(id, date, offset = 0) {
-  const end = new Date(date).getTime() + timeZoneOffset - offset + 24 * 60 * 60 * 1000;
+  const end =
+    new Date(date).getTime() + timeZoneOffset - offset + 24 * 60 * 60 * 1000;
   const start = new Date(end - 24 * 60 * 60 * 1000).getTime();
   const response = await fetch(`/api/data/${id}?start=${start}&end=${end}`);
   const { data } = await response.json();
@@ -44,6 +45,9 @@ async function fetchData(id, date, offset = 0) {
 function cleanData(data) {
   return data.filter((entry, index, array) => {
     if (entry.free_capacity !== null) {
+      return true;
+    }
+    if (index === 0 || index === array.length - 1) {
       return true;
     }
     const prev = array[index - 1];
@@ -72,8 +76,10 @@ function renderChart(data, comparisonData = {}) {
   const datasets = [
     {
       label: "Verfügbare Plätze",
-      data: values,
+      data: labels.map((label, index) => ({ x: label, y: values[index] })),
       borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+      fill: true,
       borderWidth: 3, // Increase line thickness
       pointRadius: 0, // Remove dots
     },
@@ -82,8 +88,13 @@ function renderChart(data, comparisonData = {}) {
   if (comparisonData.yesterday) {
     datasets.push({
       label: "Gestern",
-      data: comparisonData.yesterday.map((entry) => entry.free_capacity),
+      data: comparisonData.yesterday.map((entry) => ({
+        x: entry.updated_at,
+        y: entry.free_capacity,
+      })),
       borderColor: "rgba(192, 75, 75, 1)",
+      backgroundColor: "rgba(192, 75, 75, 0.2)",
+      fill: true,
       borderWidth: 3, // Increase line thickness
       borderDash: [5, 5],
       pointRadius: 0, // Remove dots
@@ -93,8 +104,13 @@ function renderChart(data, comparisonData = {}) {
   if (comparisonData.lastWeek) {
     datasets.push({
       label: "Letzte Woche",
-      data: comparisonData.lastWeek.map((entry) => entry.free_capacity),
+      data: comparisonData.lastWeek.map((entry) => ({
+        x: entry.updated_at,
+        y: entry.free_capacity,
+      })),
       borderColor: "rgba(75, 75, 192, 1)",
+      backgroundColor: "rgba(75, 75, 192, 0.2)",
+      fill: true,
       borderWidth: 3, // Increase line thickness
       borderDash: [5, 5],
       pointRadius: 0, // Remove dots
@@ -107,6 +123,10 @@ function renderChart(data, comparisonData = {}) {
   if (chartInstance) {
     chartInstance.data.labels = labels;
     chartInstance.data.datasets = datasets;
+    chartInstance.options.scales.x.min = minTime;
+    chartInstance.options.scales.x.max = maxTime;
+    chartInstance.options.plugins.limits.x.min = minTime;
+    chartInstance.options.plugins.limits.x.max = maxTime;
     chartInstance.update();
   } else {
     chartInstance = new Chart(ctx, {
@@ -116,14 +136,17 @@ function renderChart(data, comparisonData = {}) {
         datasets: datasets,
       },
       options: {
+        elements: {
+          point: { pointStyle: false },
+        },
         scales: {
           x: {
             type: "time",
             time: {
-              unit: "hour",
+              unit: "minute",
               tooltipFormat: "HH:mm",
               displayFormats: {
-                hour: "HH:mm",
+                minute: "HH:mm",
               },
             },
             min: minTime,
@@ -162,24 +185,31 @@ function renderChart(data, comparisonData = {}) {
 async function updateChart() {
   const garageId = document.getElementById("garage-select").value;
   const date = document.getElementById("date-select").value;
+  const dateOffsetToToday =
+    new Date(date).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0);
   if (garageId) {
     window.location.hash = garageId;
 
-    const data = await fetchData(garageId, date);
+    const data = (await fetchData(garageId, date)).map((d) => ({
+      ...d,
+      updated_at: d.updated_at + dateOffsetToToday,
+    }));
     const comparisonData = {};
     if (document.getElementById("show-yesterday").checked) {
-      comparisonData.yesterday = (await fetchData(
-        garageId,
-        date,
-        24 * 60 * 60 * 1000
-      )).map((d) => ({ ...d, updated_at: d.updated_at + 24 * 60 * 60 * 1000 }));
+      comparisonData.yesterday = (
+        await fetchData(garageId, date, 24 * 60 * 60 * 1000)
+      ).map((d) => ({
+        ...d,
+        updated_at: d.updated_at + 24 * 60 * 60 * 1000 + dateOffsetToToday,
+      }));
     }
     if (document.getElementById("show-last-week").checked) {
-      comparisonData.lastWeek = (await fetchData(
-        garageId,
-        date,
-        7 * 24 * 60 * 60 * 1000
-      )).map((d) => ({ ...d, updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 }));
+      comparisonData.lastWeek = (
+        await fetchData(garageId, date, 7 * 24 * 60 * 60 * 1000)
+      ).map((d) => ({
+        ...d,
+        updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 + dateOffsetToToday,
+      }));
     }
     renderChart(data, comparisonData);
 
