@@ -172,14 +172,14 @@ async function updateChart() {
         garageId,
         date,
         24 * 60 * 60 * 1000
-      )).map((d) => { ...d, updated_at: d.updated_at + 24 * 60 * 60 * 1000 });
+      )).map((d) => ({ ...d, updated_at: d.updated_at + 24 * 60 * 60 * 1000 }));
     }
     if (document.getElementById("show-last-week").checked) {
       comparisonData.lastWeek = (await fetchData(
         garageId,
         date,
         7 * 24 * 60 * 60 * 1000
-      )).map((d) => { ...d, updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 });
+      )).map((d) => ({ ...d, updated_at: d.updated_at + 7 * 24 * 60 * 60 * 1000 }));
     }
     renderChart(data, comparisonData);
 
