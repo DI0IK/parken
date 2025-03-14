@@ -29,30 +29,43 @@ async function getData() {
 
     for (const id of IDS) {
       const site = data.items.find((site) => site.id === id);
-  
+
       if (!site) {
         console.log("Site not found");
         continue;
       }
-  
-      const { realtime_data_updated_at, realtime_free_capacity, name, capacity } =
-        site;
-  
+
+      const {
+        realtime_data_updated_at,
+        realtime_free_capacity,
+        name,
+        capacity,
+      } = site;
+
       const realtime_data_updated_at_unix = new Date(
         realtime_data_updated_at
       ).getTime();
-  
+
+      console.log(
+        "Updating data for",
+        name,
+        "with ID",
+        id,
+        "and capacity",
+        capacity
+      );
+
       await db.run(
         `INSERT OR IGNORE INTO parkplatz_daten (id, updated_at, free_capacity) VALUES (?, ?, ?)`,
         [id, realtime_data_updated_at_unix, realtime_free_capacity]
       );
-  
+
       await db.run(
         `UPDATE parkplatz_meta SET name = ?, capacity = ? WHERE id = ?`,
         [name, capacity, id]
       );
     }
-  } catch(e) {
+  } catch (e) {
     console.error("Error fetching API and saving data:", e);
   }
 }
