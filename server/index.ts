@@ -53,7 +53,7 @@ async function getData() {
           },
         });
 
-        const site = data.items.find((site) => site.id === id);
+        const site = data;
 
         if (!site) {
           console.log("Site not found");
