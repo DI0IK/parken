@@ -18,7 +18,7 @@ router.get("/data/:id", async (req, res) => {
   if (isNaN(Number(id))) {
     res.status(400).send("Invalid ID");
     return;
-  } else if (!IDS.includes(Number(id))) {
+  } else if (!IDS.find((i) => i == id || i.split("|")[1] == id)) {
     res.status(400).send("ID not found");
     return;
   }
