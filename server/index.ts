@@ -24,54 +24,75 @@ server.listen(3000, () => {
 });
 
 async function getData() {
-  try {
-    const { data } = await axios.get(API_URL, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3",
-      },
-    });
+  for (const id of IDS) {
+    if (id.startsWith("http")) {
+      const { data } = await axios.get(id.split("|")[0], {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3",
+        },
+      });
 
-    for (const id of IDS) {
-      const site = data.items.find((site) => site.id === id);
-
-      if (!site) {
-        console.log("Site not found");
-        continue;
-      }
-
-      const {
-        realtime_data_updated_at,
-        realtime_free_capacity,
-        name,
-        capacity,
-      } = site;
-
-      const realtime_data_updated_at_unix = new Date(
-        realtime_data_updated_at
-      ).getTime();
-
-      console.log(
-        "Updating data for",
-        name,
-        "with ID",
-        id,
-        "and capacity",
-        capacity
+      const domParser = new DOMParser();
+      const doc = domParser.parseFromString(data, "text/html");
+      const realtime_free_capacity = parseInt(
+        doc.querySelector(".live-daten-container span").textContent
       );
+      const realtime_data_updated_at = Date.now();
 
       await db.run(
         `INSERT OR IGNORE INTO parkplatz_daten (id, updated_at, free_capacity) VALUES (?, ?, ?)`,
-        [id, realtime_data_updated_at_unix, realtime_free_capacity]
+        [id.split("|")[1], realtime_data_updated_at, realtime_free_capacity]
       );
+    } else {
+      try {
+        const { data } = await axios.get(API_URL + "/" + id, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3",
+          },
+        });
 
-      await db.run(
-        `UPDATE parkplatz_meta SET name = ?, capacity = ? WHERE id = ?`,
-        [name, capacity, id]
-      );
+        const site = data.items.find((site) => site.id === id);
+
+        if (!site) {
+          console.log("Site not found");
+          continue;
+        }
+
+        const {
+          realtime_data_updated_at,
+          realtime_free_capacity,
+          name,
+          capacity,
+        } = site;
+
+        const realtime_data_updated_at_unix = new Date(
+          realtime_data_updated_at
+        ).getTime();
+
+        console.log(
+          "Updating data for",
+          name,
+          "with ID",
+          id,
+          "and capacity",
+          capacity
+        );
+
+        await db.run(
+          `INSERT OR IGNORE INTO parkplatz_daten (id, updated_at, free_capacity) VALUES (?, ?, ?)`,
+          [id, realtime_data_updated_at_unix, realtime_free_capacity]
+        );
+
+        await db.run(
+          `UPDATE parkplatz_meta SET name = ?, capacity = ? WHERE id = ?`,
+          [name, capacity, id]
+        );
+      } catch (e) {
+        console.error("Error fetching API and saving data:", e);
+      }
     }
-  } catch (e) {
-    console.error("Error fetching API and saving data:", e);
   }
 }
 
