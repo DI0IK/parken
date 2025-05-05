@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import axios from "axios";
+import { JSDOM } from "jsdom";
 import { parseIDs } from "./helper";
 import Database from "./db";
 import apiRouter from "./api";
@@ -33,10 +34,10 @@ async function getData() {
         },
       });
 
-      const domParser = new DOMParser();
-      const doc = domParser.parseFromString(data, "text/html");
+      const doc = new JSDOM(data);
       const realtime_free_capacity = parseInt(
-        doc.querySelector(".live-daten-container span").textContent
+        doc.window.document.querySelector(".live-daten-container span")
+          .textContent
       );
       const realtime_data_updated_at = Date.now();
 
