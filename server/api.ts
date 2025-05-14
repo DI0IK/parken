@@ -43,7 +43,7 @@ router.get("/data/:id", async (req, res) => {
     sql += ` AND updated_at <= ?`;
   }
 
-  sql += ` ORDER BY updated_at ASC LIMIT 1000`;
+  sql += ` ORDER BY updated_at ASC LIMIT 3000`;
 
   const params = [Number(id)] as number[];
 
