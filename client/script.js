@@ -41,7 +41,7 @@ async function fetchData(id, date, offset = 0) {
 
 function cleanData(data) {
   return data.filter((entry, index, array) => {
-    if (entry.free_capacity !== null) {
+    if (entry.free_capacity !== null && entry.free_capacity !== 0) {
       return true;
     }
     if (index === 0 || index === array.length - 1) {
@@ -53,7 +53,9 @@ function cleanData(data) {
       prev &&
       next &&
       prev.free_capacity !== null &&
-      next.free_capacity !== null
+      prev.free_capacity !== 0 &&
+      next.free_capacity !== null &&
+      next.free_capacity !== 0
     );
   });
 }
