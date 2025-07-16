@@ -1,4 +1,4 @@
-FROM alpine:3.22.0 AS build
+FROM alpine:3.22.1 AS build
 
 COPY . /app
 
@@ -12,7 +12,7 @@ RUN npm install
 
 RUN npx tsc
 
-FROM alpine:3.22.0
+FROM alpine:3.22.1
 
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/client /app/client
