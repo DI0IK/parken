@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache \
     nodejs \
     npm \
-    python3
+    python3 py3-distutils
 
 RUN npm install
 
