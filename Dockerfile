@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache \
     nodejs \
     npm \
-    python3 py3-setuptools
+    python3 py3-setuptools build-base
 
 RUN npm install
 
