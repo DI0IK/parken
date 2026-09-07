@@ -11,7 +11,7 @@
     "axios": "^1.7.9",
     "express": "^5.0.0",
     "jsdom": "^26.1.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
